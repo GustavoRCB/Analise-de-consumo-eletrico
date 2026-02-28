@@ -1,15 +1,29 @@
+import streamlit as st
 from src.data_loader import carregar_dados
 from src.analise import calcular_metricas
 from src.visualizacao import grafico_linha
 
-if __name__ == "__main__":
-    caminho = "data/raw/consumo.csv"
-    df = carregar_dados(caminho)
+# Caminho do arquivo
+caminho = "data/raw/consumo.csv"
 
-    metricas = calcular_metricas(df)
+# Carrega dados
+df = carregar_dados(caminho)
 
-    print("\n=== MÉTRICAS DE CONSUMO ===")
-    for chave, valor in metricas.items():
-        print(f"{chave}: {valor:.2f}")
+# Calcula métricas
+metricas = calcular_metricas(df)
 
-grafico_linha(df)
+# ===== DASHBOARD =====
+
+st.title("📊 Dashboard de Consumo de Energia")
+
+st.subheader("📈 Gráfico de Consumo")
+grafico_linha(df)  # precisa usar st dentro dessa função
+
+st.subheader("📊 Métricas")
+
+col1, col2, col3, col4 = st.columns(4)
+
+col1.metric("Consumo Total", f"{metricas['consumo_total']:.2f} kWh")
+col2.metric("Consumo Médio", f"{metricas['consumo_medio']:.2f} kWh")
+col3.metric("Pico de Consumo", f"{metricas['pico_consumo']:.2f} kWh")
+col4.metric("Custo Estimado", f"R$ {metricas['custo_estimado']:.2f}")
